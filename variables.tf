@@ -15,6 +15,15 @@ variable "tags" {
   HEREDOC
 }
 
+# Vault
+variable "vault_name" {
+  type        = "string"
+  description = "Name to give to the Azure Key Vault"
+}
+variable "object_id" {
+  type = "string"
+}
+
 # Networking
 variable "vnet_name" {
   type        = "string"
@@ -168,3 +177,62 @@ variable "vm_network_profile_ip_name" {
   type        = "string"
   description = "Name of the VM network profile IP configuration to create"
 }
+
+# Service Fabric Cluster
+# variable "cluster_protection_level" {
+#   type        = "string"
+#   default     = "EncryptAndSign"
+#   description = <<-HEREDOC
+#   Protection level. It is best to keep the default of EncryptAndSign
+#   unless you have a need not to.
+#   allowed values:-
+#     None
+#     Sign
+#     EncryptAndSign
+#   HEREDOC
+# }
+
+variable "certificate_store_value" {
+  type        = "string"
+  description = "The store name where the cert will be deployed in the virtual machine"
+}
+
+# variable "certificate_thumbprint" {
+#   type        = "string"
+#   description = "Certificate Thumbprint"
+# }
+
+# variable "service_fabric_name" {
+#   type        = "string"
+#   description = ""
+# }
+
+# variable "service_fabric_publisher" {
+#   type        = "string"
+#   description = ""
+# }
+
+# variable "service_fabric_type" {
+#   type        = "string"
+#   description = ""
+# }
+
+# variable "service_fabric_type_handler_version" {
+#   type        = "string"
+#   description = ""
+# }
+
+# variable "service_fabric_auto_upgrade" {
+#   type        = "string"
+#   description = ""
+# }
+
+# variable "service_fabric_settings" {
+#   type        = "string"
+#   description = "JSON object, for things like cluster details, certificates..."
+# }
+
+# variable "service_fabric_protected_settings" {
+#   type        = "string"
+#   description = "JSON object, for things like keys to shared storage..."
+# }

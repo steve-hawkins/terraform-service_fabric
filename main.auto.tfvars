@@ -11,6 +11,9 @@ tags = {
   project      = "automation"
 }
 
+vault_name = "mr-steve-service-fabric"
+object_id  = "457992d1-2605-43a7-8810-9f0b75847f51"
+
 vnet_name                    = "vnet"
 vnet_address_space           = ["10.0.0.0/16"]
 subnet_name                  = "subnet"
@@ -37,3 +40,14 @@ vm_data_disk_type          = "Standard_LRS"
 vm_data_disk_size          = "10"
 vm_network_profile_name    = "network_profile"
 vm_network_profile_ip_name = "ip_config"
+
+# cluster_protection_level = ""
+certificate_store_value = "My"
+# certificate_thumbprint = ""
+# service_fabric_name = "bob"
+# service_fabric_publisher = "Microsoft.Azure.ServiceFabric"
+# service_fabric_type = "ServiceFabricNode"
+# service_fabric_type_handler_version = "1.0"
+# service_fabric_auto_upgrade = "true"
+# service_fabric_settings = ""
+# service_fabric_protected_settings = ""

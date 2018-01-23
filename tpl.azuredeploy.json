@@ -1,0 +1,98 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "variables": {
+    "clusterName": "${cluster_name}",
+    "clusterProtectionLevel": "${cluster_protection_level}",
+    "certificateStoreValue": "${certificate_store_value}",
+    "certificateThumbprint": "${certificate_thumbprint}",
+    "vmCount": "${vm_count}",
+    "lbIPName": "PublicIP-LB-FE",
+    "nt0applicationStartPort": "20000",
+    "nt0applicationEndPort": "30000",
+    "nt0ephemeralStartPort": "49152",
+    "nt0ephemeralEndPort": "65534",
+    "nt0fabricTcpGatewayPort": "19000",
+    "nt0fabricHttpGatewayPort": "19080",
+    "nt0reverseProxyEndpointPort": "19081",
+    "supportLogStorageAccountName": "${cluster_storage_account}",
+    "location": "[resourceGroup().location]",
+    "svcfabApiVersion": "2017-07-01-preview",
+    "storageApiVersion": "2016-01-01"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ServiceFabric/clusters",
+      "name": "[variables('clusterName')]",
+      "apiVersion": "[variables('svcfabApiVersion')]",
+      "location": "[variables('location')]",
+      "properties": {
+        "addonFeatures": [
+          "DnsService",
+          "RepairManager"
+        ],
+        "certificate": {
+          "thumbprint": "[parameters('certificateThumbprint')]",
+          "x509StoreName": "[parameters('certificateStoreValue')]"
+        },
+        "clusterState": "Default",
+        "diagnosticsStorageAccountConfig": {
+          "blobEndpoint": "[reference(concat('Microsoft.Storage/storageAccounts/', variables('supportLogStorageAccountName')), variables('storageApiVersion')).primaryEndpoints.blob]",
+          "protectedAccountKeyName": "StorageAccountKey1",
+          "queueEndpoint": "[reference(concat('Microsoft.Storage/storageAccounts/', variables('supportLogStorageAccountName')), variables('storageApiVersion')).primaryEndpoints.queue]",
+          "storageAccountName": "[variables('supportLogStorageAccountName')]",
+          "tableEndpoint": "[reference(concat('Microsoft.Storage/storageAccounts/', variables('supportLogStorageAccountName')), variables('storageApiVersion')).primaryEndpoints.table]"
+        },
+        "fabricSettings": [
+          {
+            "parameters": [
+              {
+                "name": "ClusterProtectionLevel",
+                "value": "[parameters('clusterProtectionLevel')]"
+              }
+            ],
+            "name": "Security"
+          }
+        ],
+        "managementEndpoint": "[concat('https://',reference(concat(variables('lbIPName'),'-',variables('vmNodeType0Name'))).dnsSettings.fqdn,':',variables('nt0fabricHttpGatewayPort'))]",
+        "nodeTypes": [
+          {
+            "name": "[variables('vmNodeType0Name')]",
+            "applicationPorts": {
+              "endPort": "[variables('nt0applicationEndPort')]",
+              "startPort": "[variables('nt0applicationStartPort')]"
+            },
+            "clientConnectionEndpointPort": "[variables('nt0fabricTcpGatewayPort')]",
+            "durabilityLevel": "Bronze",
+            "ephemeralPorts": {
+              "endPort": "[variables('nt0ephemeralEndPort')]",
+              "startPort": "[variables('nt0ephemeralStartPort')]"
+            },
+            "httpGatewayEndpointPort": "[variables('nt0fabricHttpGatewayPort')]",
+            "isPrimary": true,
+            "reverseProxyEndpointPort": "[variables('nt0reverseProxyEndpointPort')]",
+            "vmInstanceCount": "[parameters('vmCount')]"
+          }
+        ],
+        "provisioningState": "Default",
+        "reliabilityLevel": "Silver",
+        "reverseProxyCertificate": {
+          "thumbprint": "[parameters('certificateThumbprint')]",
+          "x509StoreName": "[parameters('certificateStoreValue')]"
+        },
+        "upgradeMode": "Automatic",
+        "vmImage": "Windows"
+      },
+      "tags": {
+        "resourceType": "Service Fabric",
+        "clusterName": "[parameters('clusterName')]"
+      }
+    }
+  ],
+  "outputs": {
+    "clusterProperties": {
+      "value": "[reference(parameters('clusterName'))]",
+      "type": "object"
+    }
+  }
+}

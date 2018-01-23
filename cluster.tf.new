@@ -1,0 +1,32 @@
+data "template_file" "init" {
+  template = "${file("${path.module}/tpl.azuredeploy.json")}"
+
+  vars {
+    proxy_url           = "${var.proxy_url}"
+    dns_suffix          = "${var.dns_suffix}"
+    puppet_role         = "${var.puppet_role}"
+    puppet_master       = "${var.puppet_master}"
+    puppet_environment  = "${var.puppet_environment}"
+    puppet_autosign_key = "${var.puppet_autosign_key}"
+    team                = "${var.team}"
+    resource_group_name = "${var.resource_group_name}"
+    application         = "${var.application}"
+    server_type         = "${var.server_type}"
+    hiscox_environment  = "${var.hiscox_environment}"
+    instance_count      = "${format("%02d", count.index)}"
+  }
+}
+
+resource "azurerm_template_deployment" "test" {
+  name                = "${var.cluster_name}"
+  resource_group_name = "${azurerm_resource_group.test.name}"
+
+  template_body = "${data.template_file.init.rendered}"
+
+  # these key-value pairs are passed into the ARM Template's `parameters` block
+  parameters {
+    "storageAccountType" = "Standard_GRS"
+  }
+
+  deployment_mode = "Incremental"
+}

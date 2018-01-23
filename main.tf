@@ -45,6 +45,14 @@ resource "azurerm_virtual_machine_scale_set" "test" {
     admin_password       = "${var.vm_admin_password}"
   }
 
+  os_profile_secrets {
+    source_vault_id = "${azurerm_key_vault.test.id}"
+    vault_certificates {
+      certificate_url   = "${azurerm_key_vault.test.vault_uri}/secrets/service-fabric-server/${azurerm_key_vault_certificate.service_fabric_server.version}"
+      certificate_store = "${var.certificate_store_value}"
+    }
+  }
+
   os_profile_windows_config {
     provision_vm_agent = true
   }
@@ -60,6 +68,16 @@ resource "azurerm_virtual_machine_scale_set" "test" {
       load_balancer_inbound_nat_rules_ids    = ["${azurerm_lb_nat_pool.test.id}"]
     }
   }
+
+  # extension {
+  #   name                       = "${var.service_fabric_name}"
+  #   publisher                  = "${var.service_fabric_publisher}"
+  #   type                       = "${var.service_fabric_type}"
+  #   type_handler_version       = "${var.service_fabric_type_handler_version}"
+  #   auto_upgrade_minor_version = "${var.service_fabric_auto_upgrade}"
+  #   settings                   = "${var.service_fabric_settings}"
+  #   protected_settings         = "${var.service_fabric_protected_settings}"
+  # }
 
   tags = "${var.tags}"
 }
